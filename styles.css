@@ -1,12 +1,17 @@
+/* Estilo general para el fondo */
 body {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #000;
-    color: #fff;
-    font-family: 'Times New Roman', serif;
+    background-image: url('img/galaxong1.gif'); /* Ruta del archivo GIF de fondo */
+    background-size: cover;            /* Asegura que el fondo cubra toda la pantalla */
+    background-position: center;       /* Centra el fondo */
+    background-attachment: fixed;      /* Hace que el fondo se quede fijo al hacer scroll */
+    height: 100vh;                     /* Asegura que el cuerpo ocupe toda la altura de la ventana */
+    margin: 0;                         /* Elimina los márgenes del cuerpo */
+}
+
+/* Otras configuraciones de estilos del UI y del juego */
+#gameCanvas {
+    display: block;
+    margin: 0 auto;
 }
 
 #gameCanvas {
@@ -23,6 +28,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    color: #fff;
 }
 
 button {
