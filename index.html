@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Galaxong</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="800"></canvas>
+    <div id="ui">
+        <button id="pauseButton">Pausar</button>
+        <button id="restartButton">Reiniciar</button>
+        <button id="exitButton">Salir</button>
+        <div id="scoreBoard">
+            <p>Puntos: <span id="score">0</span></p>
+            <p>Disparos: <span id="shots">0</span></p>
+            <p>Enemigos: <span id="enemies">0</span></p>
+            <!-- Agregamos el temporizador -->
+            <p id="timer">Tiempo restante: 60s</p>
+        </div>
+        <div id="titulo">
+            Juego Galaxong
+        </div>
+    </div>
+
+    <script src="juego.js"></script>
+</body>
+</html>
