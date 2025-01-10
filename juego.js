@@ -170,19 +170,32 @@ class Bicho {
 // Configuración de la nave (jugador)
 const player = new Nave(canvas.width / 2, canvas.height - 50, 0);
 
-// Configuración de los proyectiles
+// Configuración de los proyectiles (modificada)
 const projectiles = [];
 function shoot() {
+    const isSpecial = isNextShotSpecial; // Verificar si el disparo actual es especial
+    isNextShotSpecial = false; // Reiniciar la bandera después de disparar
+    // Calcular la posición inicial de la bala en el pico superior de la nave
+    const bulletOffsetX = Math.cos((player.angle - 90) * Math.PI / 180) * 20; // Ajusta 20 según el tamaño de la nave
+    const bulletOffsetY = Math.sin((player.angle - 90) * Math.PI / 180) * 20;
+
+    // Crear el proyectil desde el punto exacto
     projectiles.push({
-        x: player.x,
-        y: player.y - 20,
-        radius: 5,
-        speed: -7,
-        color: 'white',
+        x: player.x + bulletOffsetX, // Posición inicial en X
+        y: player.y + bulletOffsetY, // Posición inicial en Y
+        dx: Math.cos((player.angle - 90) * Math.PI / 180) * 7, // Velocidad en X
+        dy: Math.sin((player.angle - 90) * Math.PI / 180) * 7, // Velocidad en Y
+        radius: isSpecial ? 7 : 5, // Aumentar tamaño si es especial
+        color: isSpecial ? 'yellow' : 'white', // Cambiar color si es especial
+        hasRebounded: false, // Para rastrear si el proyectil ya rebotó
+        isSpecial: isSpecial, // Marcar si es un proyectil especial
     });
+
+    // Incrementar disparos y actualizar estadísticas
     shots++;
     updateStats();
 }
+
 
 // Configuración de los enemigos (bichos)
 const enemies = [];
@@ -205,40 +218,100 @@ function drawEnemies() {
     });
 }
 
-// Dibujar y mover proyectiles
+let isNextShotSpecial = false; // Bandera para indicar si el siguiente disparo es especial
+
 function drawProjectiles() {
     projectiles.forEach((projectile, index) => {
+        // Actualizar posición
+        projectile.x += projectile.dx;
+        projectile.y += projectile.dy;
+
+        // Verificar si el proyectil está fuera del círculo
+        const distanciaAlCentro = Math.sqrt(
+            Math.pow(projectile.x - canvas.width / 2, 2) +
+            Math.pow(projectile.y - canvas.height / 2, 2)
+        );
+
+        if (distanciaAlCentro > radio) {
+            if (!projectile.hasRebounded) {
+                // Rebote: invertir dirección
+                const angleToCenter = Math.atan2(
+                    projectile.y - canvas.height / 2,
+                    projectile.x - canvas.width / 2
+                );
+                projectile.dx = -Math.cos(angleToCenter) * 7;
+                projectile.dy = -Math.sin(angleToCenter) * 7;
+                projectile.hasRebounded = true; // Marcar como rebotado
+            } else {
+                // Desaparecer después del primer rebote
+                projectiles.splice(index, 1);
+                score -= 10; // Penalización por fallar
+                updateStats();
+                return;
+            }
+        }
+
+        // Dibujar el proyectil
         ctx.beginPath();
         ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
         ctx.fillStyle = projectile.color;
         ctx.fill();
         ctx.closePath();
-        projectile.y += projectile.speed;
-
-        if (projectile.y < 0) {
-            projectiles.splice(index, 1);
-        }
     });
 }
 
-// Detectar colisiones
 function detectCollisions() {
     projectiles.forEach((projectile, pIndex) => {
+        // Verificar colisión con enemigos
         enemies.forEach((enemy, eIndex) => {
             if (
                 projectile.x > enemy.x - enemy.anchoBicho / 2 &&
                 projectile.x < enemy.x + enemy.anchoBicho / 2 &&
-                projectile.y > enemy.y - enemy.anchoBicho / 2 &&
-                projectile.y < enemy.y + enemy.anchoBicho / 2
+                projectile.y > enemy.y - enemy.alturaBicho / 2 &&
+                projectile.y < enemy.y + enemy.alturaBicho / 2
             ) {
                 projectiles.splice(pIndex, 1);
                 enemies.splice(eIndex, 1);
-                score += 10;
+
+                // Aumentar puntaje basado en el tipo de proyectil
+                if (projectile.isSpecial) {
+                    score += 20; // 20 puntos por proyectil amarillo
+                } else {
+                    score += 10; // 10 puntos por proyectil normal
+                }
+
                 enemiesDefeated++;
                 updateStats();
             }
         });
+
+        // Verificar si el proyectil impacta la nave
+        const distanciaANave = Math.sqrt(
+            Math.pow(projectile.x - player.x, 2) +
+            Math.pow(projectile.y - player.y, 2)
+        );
+        if (distanciaANave < 15) {
+            projectiles.splice(pIndex, 1);
+
+            // Activar el siguiente disparo especial
+            isNextShotSpecial = true;
+
+            // Penalización por impactar la nave
+            score -= 10;
+            updateStats();
+        }
     });
+}
+// Actualizar la barra de progreso
+function updateProgressBar() {
+    const progressBar = document.getElementById('progressBar');
+    const progressPercentage = Math.min((score / 200) * 100, 100); // Calcular el progreso como porcentaje
+    progressBar.style.width = progressPercentage + '%';
+
+    // Cambiar el color si la barra está completa
+    if (progressPercentage === 100) {
+        progressBar.style.backgroundColor = 'gold';
+    }
 }
 
 // Actualizar estadísticas
@@ -246,6 +319,7 @@ function updateStats() {
     document.getElementById('score').textContent = score;
     document.getElementById('shots').textContent = shots;
     document.getElementById('enemies').textContent = enemiesDefeated;
+    updateProgressBar();
 }
 // Mostrar mensaje de bienvenida y manejar inicio del juego
 function showWelcomeMessage() {
@@ -292,6 +366,7 @@ function gameLoop() {
 
     requestAnimationFrame(gameLoop);
 }
+
 
 // Control de eventos para mover la nave y disparar
 document.addEventListener('keydown', (e) => {
