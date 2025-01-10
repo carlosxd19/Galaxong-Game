@@ -367,6 +367,27 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+// Selecciona el botón y añade un evento de clic
+const exitButton = document.getElementById('exitButton');
+exitButton.addEventListener('click', () => {
+    // Detener el juego pausándolo
+    gamePaused = true;
+
+    // Confirmar si el usuario desea salir
+    const confirmExit = confirm("¿Estás seguro de que quieres salir del juego?");
+    if (confirmExit) {
+        // Puedes recargar la página
+        
+        alert('Gracias por jugar!');
+        // O cerrar la ventana (solo funciona en algunas configuraciones de navegador)
+        window.close();
+        // Mostrar un mensaje si no se puede cerrar
+        alert("No se puede cerrar esta pestaña directamente. Por favor, ciérrala manualmente.");
+    } else {
+        // Reanudar el juego si el usuario cancela
+        gamePaused = false;
+    }
+});
 
 // Control de eventos para mover la nave y disparar
 document.addEventListener('keydown', (e) => {
@@ -401,10 +422,6 @@ document.getElementById('restartButton').addEventListener('click', () => {
     location.reload();
 });
 
-document.getElementById('exitButton').addEventListener('click', () => {
-    alert('Gracias por jugar!');
-    window.close();
-});
 
 // Crear enemigos cada cierto tiempo
 setInterval(() => {
