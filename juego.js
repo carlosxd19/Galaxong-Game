@@ -7,7 +7,7 @@ let shots = 0;
 let enemiesDefeated = 0;
 let gamePaused = false;
 const radio = canvas.width / 2 - 30; // Radio del círculo
-let timer = 60; // Temporizador de 1 minuto
+let timer = 90; // Temporizador de 1 minuto
 let gameStarted = false; // Flag para controlar el inicio del juego
 
 // Clase Nave (con diseño personalizado)
@@ -305,7 +305,7 @@ function detectCollisions() {
 // Actualizar la barra de progreso
 function updateProgressBar() {
     const progressBar = document.getElementById('progressBar');
-    const progressPercentage = Math.min((score / 200) * 100, 100); // Calcular el progreso como porcentaje
+    const progressPercentage = Math.min((score / 400) * 100, 100); // Calcular el progreso como porcentaje
     progressBar.style.width = progressPercentage + '%';
 
     // Cambiar el color si la barra está completa
@@ -323,7 +323,7 @@ function updateStats() {
 }
 // Mostrar mensaje de bienvenida y manejar inicio del juego
 function showWelcomeMessage() {
-    alert("Bienvenido al juego de Galaxong! El juego consiste en disparar a los enemigos que aparecerán en la pantalla. Debes hacer 200 puntos en 1 minuto. ¡Buena suerte!");
+    alert("Bienvenido al juego de Galaxong! El juego consiste en disparar a los enemigos que aparecerán en la pantalla. Debes hacer 400 puntos en 1 minuto con 30 segundos. Consejos del Juego: Cuando las bolas disparadas le reboten a la nave saldra en color amarillo y dara 20 puntos extra. ¡Buena suerte!");
     gameStarted = true;
     startTimer();
 }
@@ -337,7 +337,7 @@ function startTimer() {
 
             if (timer <= 0) {
                 clearInterval(timerInterval);
-                if (score >= 200) {
+                if (score >= 400) {
                     alert("¡Enhorabuena! Has ganado el juego.");
                 } else {
                     alert("No lograste ganar el juego. Vuelve a intentarlo.");
