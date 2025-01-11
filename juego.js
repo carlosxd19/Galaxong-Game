@@ -275,9 +275,9 @@ function detectCollisions() {
 
                 // Aumentar puntaje basado en el tipo de proyectil
                 if (projectile.isSpecial) {
-                    score += 20; // 20 puntos por proyectil amarillo
+                    score += 50; // 20 puntos por proyectil amarillo
                 } else {
-                    score += 10; // 10 puntos por proyectil normal
+                    score += 20; // 10 puntos por proyectil normal
                 }
 
                 enemiesDefeated++;
@@ -307,12 +307,18 @@ function updateProgressBar() {
     const progressBar = document.getElementById('progressBar');
     const progressPercentage = Math.min((score / 400) * 100, 100); // Calcular el progreso como porcentaje
     progressBar.style.width = progressPercentage + '%';
+    progressBar.textContent = Math.round(progressPercentage) + '%';
 
-    // Cambiar el color si la barra está completa
-    if (progressPercentage === 100) {
-        progressBar.style.backgroundColor = 'gold';
+    // Cambiar el color de la barra según el porcentaje
+    if (progressPercentage >= 100) {
+        progressBar.style.backgroundColor = 'green';
+    } else if (progressPercentage >= 50) {
+        progressBar.style.backgroundColor = 'orange';
+    } else {
+        progressBar.style.backgroundColor = 'red';
     }
 }
+
 
 // Actualizar estadísticas
 function updateStats() {
@@ -328,28 +334,75 @@ function showWelcomeMessage() {
     startTimer();
 }
 
-// Iniciar temporizador
+// Verificar y guardar el récord más alto
+function checkAndSaveRecord() {
+    const currentRecord = localStorage.getItem('highScore') || 0;
+    let message = `Tu puntaje: ${score}\n`;
+
+    if (score > currentRecord) {
+        localStorage.setItem('highScore', score);
+        message += "¡Nuevo récord establecido!\n";
+    } else {
+        message += `Récord actual: ${currentRecord}\n`;
+    }
+
+    return message;
+}
+
+// Mostrar resultados al final del juego
+function showEndGameMessage() {
+    const recordMessage = checkAndSaveRecord();
+    const resultMessage = score >= 400 ? 
+        "¡Enhorabuena! Has ganado el juego.\n" : 
+        "No lograste ganar el juego. Vuelve a intentarlo.\n";
+    
+    const finalMessage = `${resultMessage}\n${recordMessage}`;
+    alert(finalMessage);
+
+    // Reiniciar el juego si el jugador lo desea
+    const restart = confirm("¿Quieres jugar de nuevo?");
+    if (restart) {
+        restartGame();
+    }else{
+        gamePaused = !gamePaused;
+    }
+}
+
+// Función para reiniciar el juego
+function restartGame() {
+    score = 0;
+    shots = 0;
+    enemiesDefeated = 0;
+    timer = 90;
+    gamePaused = false;
+    gameStarted = false;
+    enemies.length = 0;
+    projectiles.length = 0;
+    updateStats();
+    showWelcomeMessage();
+}
+
+// Modificar el temporizador para finalizar el juego
 function startTimer() {
+    const timerElement = document.getElementById('timer');
     const timerInterval = setInterval(() => {
         if (!gamePaused) {
             timer--;
-            document.getElementById('timer').textContent = timer;
+
+            // Convertir segundos a formato MM:SS
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
             if (timer <= 0) {
                 clearInterval(timerInterval);
-                if (score >= 400) {
-                    alert("¡Enhorabuena! Has ganado el juego.");
-                } else {
-                    alert("No lograste ganar el juego. Vuelve a intentarlo.");
-                }
-                const restart = confirm("¿Quieres jugar de nuevo?");
-                if (restart) {
-                    location.reload();
-                }
+                showEndGameMessage(); // Mostrar resultados al final
             }
         }
     }, 1000);
 }
+
+
 
 // Bucle principal del juego
 function gameLoop() {
