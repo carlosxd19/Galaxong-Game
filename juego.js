@@ -329,7 +329,7 @@ function updateStats() {
 }
 // Mostrar mensaje de bienvenida y manejar inicio del juego
 function showWelcomeMessage() {
-    alert("Bienvenido al juego de Galaxong! El juego consiste en disparar a los enemigos que aparecerán en la pantalla. Debes hacer 400 puntos en 1 minuto con 30 segundos. Consejos del Juego: Cuando las bolas disparadas le reboten a la nave saldra en color amarillo y dara 20 puntos extra. ¡Buena suerte!");
+    alert("Bienvenido al juego de Galaxong! El juego consiste en disparar a los enemigos que aparecerán en la pantalla. Debes hacer 400 puntos en 1 minuto con 30 segundos. Consejos del Juego: Cuando las bolas disparadas le reboten a la nave saldra en color amarillo y dara 50 puntos extra. ¡Buena suerte!");
     gameStarted = true;
     startTimer();
 }
