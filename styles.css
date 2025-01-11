@@ -1,5 +1,6 @@
 /* Estilo general para el fondo */
 body {
+    background-color: #000;
     background-image: url('img/galaxong1.gif'); /* Ruta del archivo GIF de fondo */
     background-size: cover;            /* Asegura que el fondo cubra toda la pantalla */
     background-position: center;       /* Centra el fondo */
